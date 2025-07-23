@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Presença - Instituto Projeto de Vida</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #bdcd97 0%, #8767a3 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #8767a3, #bdcd97);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #ffffff;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #bdcd97, #a8bd82);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h3 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-card p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .attendance-table-container {
+            padding: 30px;
+            background: #ffffff;
+        }
+
+        .table-header {
+            background: #8767a3;
+            color: white;
+            padding: 20px;
+            margin: -30px -30px 20px -30px;
+            text-align: center;
+        }
+
+        .table-header h2 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            overflow-y: visible;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: #8767a3 #f1f1f1;
+        }
+
+        .table-wrapper::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: #8767a3;
+            border-radius: 4px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #bdcd97;
+        }
+
+        .attendance-table {
+            width: 100%;
+            min-width: 1000px;
+            border-collapse: collapse;
+        }
+
+        .attendance-table th {
+            background: #8767a3;
+            color: white;
+            padding: 15px 8px;
+            text-align: center;
+            font-size: 0.9em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .attendance-table th:first-child {
+            text-align: left;
+            padding-left: 15px;
+            min-width: 200px;
+            position: sticky;
+            left: 0;
+            z-index: 10;
+            background: #8767a3;
+            color: white;
+        }
+
+        .attendance-table th:first-child,
+        .attendance-table td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 10;
+            background: #ffffff;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+
+        .attendance-table th:first-child {
+            background: #8767a3;
+            color: white;
+        }
+
+        .attendance-table td:first-child {
+            background: #f8f9fa !important;
+            color: #333 !important;
+            font-weight: 500;
+        }
+
+        .attendance-table td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.85em;
+        }
+
+        .attendance-table td:first-child {
+            text-align: left;
+            padding-left: 15px;
+            font-weight: 500;
+            background: #f8f9fa;
+        }
+
+        .attendance-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .attendance-table tr:hover {
+            background: rgba(189, 205, 151, 0.1);
+        }
+
+        .presente {
+            background: #bdcd97;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .ausente {
+            background: #e8e8e8;
+            color: #666;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .gender-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .gender-card {
+            background: linear-gradient(45deg, #8767a3, #a67bb8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .footer {
+            background: #8767a3;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .table-wrapper {
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .attendance-table {
+                font-size: 0.8em;
+                min-width: 900px;
+            }
+            
+            .attendance-table th,
+            .attendance-table td {
+                padding: 8px 4px;
+                white-space: nowrap;
+            }
+
+            .attendance-table th:first-child,
+            .attendance-table td:first-child {
+                position: sticky;
+                left: 0;
+                background: #8767a3;
+                color: white;
+                z-index: 2;
+                box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            }
+
+            .attendance-table td:first-child {
+                background: #f8f9fa;
+                color: #333;
+                font-weight: 500;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+                padding: 20px;
+            }
+
+            .attendance-table-container {
+                padding: 20px;
+            }
+
+            .table-header {
+                margin: -20px -20px 15px -20px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Instituto Projeto de Vida</h1>
+            <p>Relatório de Presença | Julho 2025</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>41</h3>
+                <p>Total de Alunos</p>
+            </div>
+            <div class="stat-card">
+                <h3>12</h3>
+                <p>Dias Letivos</p>
+            </div>
+            <div class="stat-card">
+                <h3>87.2%</h3>
+                <p>Taxa de Presença</p>
+            </div>
+            <div class="stat-card">
+                <h3>492</h3>
+                <p>Total de Presenças</p>
+            </div>
+        </div>
+
+        <div class="attendance-table-container">
+            <div class="table-header">
+                <h2>Registro de Presença por Aluno</h2>
+                <p>Período: 07/07/2025 a 22/07/2025</p>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="attendance-table">
+                <thead>
+                    <tr>
+                        <th>Aluno</th>
+                        <th>Sexo</th>
+                        <th>07/07</th>
+                        <th>08/07</th>
+                        <th>09/07</th>
+                        <th>10/07</th>
+                        <th>11/07</th>
+                        <th>14/07</th>
+                        <th>15/07</th>
+                        <th>16/07</th>
+                        <th>17/07</th>
+                        <th>18/07</th>
+                        <th>21/07</th>
+                        <th>22/07</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="attendanceTableBody">
+                </tbody>
+                            </table>
+            </div>
+
+            <div class="gender-stats">
+                <div class="gender-card">
+                    <h3>Feminino</h3>
+                    <p><strong>27 alunas</strong> (65.9%)</p>
+                </div>
+                <div class="gender-card">
+                    <h3>Masculino</h3>
+                    <p><strong>14 alunos</strong> (34.1%)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Relatório gerado automaticamente • Instituto Projeto de Vida • Julho 2025</p>
+        </div>
+    </div>
+
+    <script>
+        const attendanceData = [
+            ["Adriano Ferro de Oliveira Filho", "Masculino", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "", "P"],
+            ["Alan Christian Amaral Santana", "Masculino", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P"],
+            ["Alexsandra de Oliveira Marques Portes", "Masculino", "P", "P", "P", "P", "P", "P", "P", "P", "", "P", "P", "P"],
+            ["Allanhe Palhano Rodrigues", "Masculino", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", ""],
+            ["Amanda Souza do Carmo", "Feminino", "P", "P", "P", "P", "P", "P", "P", "P", "", "P", "P", "P"],
+            ["Ana Karla Sanchez da Silva", "Feminino", "P", "P", "P", "P", "P", "P", "", "P", "P", "P", "P", "P"],
+            ["Ana Laura Queiroz Oliveira", "Feminino", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P"],
+            ["Andréia Paula Franco Sousa", "Feminino", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P"],
+            ["Arhyane Palhano Rodrigues", "Feminino", "P", "P", "P", "P", "P", "P", "P", "P", "", "P", "P", "P"],
+            ["Brendhon Batista Rosa", "Masculino", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P"],
+            ["Brenno Garcia Lopes Conzatti de Oliveira", "Masculino", "P", "P", "P", "P", "P", "P", "P", "P", "P", "", "P", "P"],
+            ["César Augusto Pereira", "Feminino", "P", "P", "", "P", "P", "P", "P", "", "P", "P", "", "P"],
+            ["Daniel Paulo Batista", "Masculino", "", "P", "P", "P", "P", "P", "", "P", "", "", "", ""],
+            ["Eliana P. Macedo Araújo", "Feminino", "P", "P", "P", "P", "", "P", "P", "P", "P", "", "P", ""],
+            ["Felipe Davi de Souza Silva", "Masculino", "", "P", "P", "P", "P", "P", "P", "P", "", "P", "P", ""],
+            ["Fernanda Ávila Pereira", "Feminino", "P", "P", "P", "P", "P", "P", "P", "", "P", "P", "P", "P"],
+            ["Geslaine Gomes da Silva", "Feminino", "P", "", "P", "P", "P", "P", "P", "P", "P", "P", "", ""],
+            ["Ially Alves Batista Pereira", "Feminino", "", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P"],
+            ["Isabelly Matos Santos", "Feminino", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P"],
+            ["Isadora Ramos Tozette", "Feminino", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P"],
+            ["Isaque Araujo Goncalves", "Masculino", "", "P", "P", "P", "P", "", "P", "", "", "P", "P", "P"],
+            ["Jordanna Mikaely", "Feminino", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "", ""],
+            ["José Augusto Zardine Filho", "Masculino", "P", "", "P", "P", "P", "P", "P", "P", "P", "P", "", "P"],
+            ["Kálita Duarte de Araújo", "Feminino", "P", "P", "", "P", "", "", "", "", "", "", "", ""],
+            ["Kelly H. de Oliveira", "Feminino", "P", "P", "P", "P", "P", "P", "P", "P", "P", "", "", ""],
+            ["Leonardo Henrique Pereira", "Masculino", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", ""],
+            ["Marcella Nascimento Nardi", "Feminino", "", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P"],
+            ["Marcelle Fernandes Gomes", "Feminino", "P", "P", "P", "P", "P", "P", "P", "", "P", "", "", ""],
+            ["Maria Alice Lopes", "Feminino", "", "", "P", "P", "P", "P", "", "P", "P", "P", "", ""],
+            ["María Pilar Castillo Meza", "Feminino", "P", "P", "P", "P", "P", "", "", "", "", "P", "", ""],
+            ["Mariele Oliveira Cruz", "Feminino", "P", "P", "P", "P", "P", "P", "P", "P", "", "", "P", "P"],
+            ["Otávio Antônio", "Masculino", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P"],
+            ["Pricylla Borges Guimarães", "Feminino", "P", "", "P", "P", "", "", "", "", "", "", "", ""],
+            ["Rafael Piva", "Masculino", "P", "P", "P", "P", "P", "P", "P", "", "P", "P", "P", "P"],
+            ["Silvia Maicelys", "Feminino", "P", "P", "P", "P", "", "P", "P", "P", "P", "P", "P", "P"],
+            ["Simone Corrêa serralha Rocha", "Feminino", "P", "P", "P", "P", "P", "P", "P", "", "P", "P", "P", "P"],
+            ["Sueli Soares Braga", "Feminino", "P", "P", "P", "P", "P", "", "P", "P", "P", "P", "P", "P"],
+            ["Thaira Couto Franco", "Feminino", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P"],
+            ["Theodôra Silva Prata", "Feminino", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P"],
+            ["William ribeiro fontes", "Masculino", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "", ""],
+            ["Cheila Regina Queiroz", "Feminino", "", "", "", "", "", "P", "P", "P", "P", "P", "P", "P"]
+        ];
+
+        function populateTable() {
+            const tbody = document.getElementById('attendanceTableBody');
+            
+            attendanceData.forEach(student => {
+                const row = document.createElement('tr');
+                const name = student[0];
+                const gender = student[1];
+                const attendances = student.slice(2);
+                
+                // Count total presences
+                const totalPresences = attendances.filter(att => att === 'P').length;
+                
+                // Create name cell
+                const nameCell = document.createElement('td');
+                nameCell.textContent = name;
+                row.appendChild(nameCell);
+                
+                // Create gender cell
+                const genderCell = document.createElement('td');
+                genderCell.textContent = gender;
+                row.appendChild(genderCell);
+                
+                // Create attendance cells
+                attendances.forEach(attendance => {
+                    const cell = document.createElement('td');
+                    if (attendance === 'P') {
+                        cell.innerHTML = '<span class="presente">P</span>';
+                    } else {
+                        cell.innerHTML = '<span class="ausente">-</span>';
+                    }
+                    row.appendChild(cell);
+                });
+                
+                // Create total cell
+                const totalCell = document.createElement('td');
+                totalCell.innerHTML = `<strong>${totalPresences}/12</strong>`;
+                totalCell.style.background = totalPresences >= 10 ? '#bdcd97' : totalPresences >= 8 ? '#f0d64a' : '#ff7675';
+                totalCell.style.color = 'white';
+                totalCell.style.borderRadius = '4px';
+                row.appendChild(totalCell);
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // Populate table when page loads
+        window.addEventListener('load', populateTable);
+    </script>
+</body>
+</html>
